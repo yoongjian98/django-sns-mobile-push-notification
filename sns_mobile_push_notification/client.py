@@ -22,7 +22,7 @@ class Client(object):
     def __init__(self):
         """
         Constructor method.
-        """    
+        """
         self.__dict__ = self.__shared_state
         self.connection = self.connect()
 
@@ -111,7 +111,7 @@ class Client(object):
         )
         return message, response
 
-    def publish_to_ios(self, arn, title, text, notification_type, data, id):
+    def publish_to_ios(self, arn, title, text, notification_type, data, id, sandbox=False):
         """
         Method that sends a mobile push notification to an IOS device.
         :param arn: ARN(Amazon resource name)
@@ -122,7 +122,11 @@ class Client(object):
         :param id: notification ID
         :return: response from SNS
         """
-        message = {"APNS": "{ \"aps\": { \"alert\": { \"title\": \"%s\", \"body\": \"%s\" }, \"sound\": \"default\" }, \"id\": \"%s\",  \"type\": \"%s\", \"serializer\": \"%s\" }" % (title, text, id, notification_type, json.dumps(data).replace("'", "").replace('"', "'"))}
+        key = "APNS"
+        if sandbox:
+            key = "APNS_SANDBOX"
+
+        message = {"%s": "{ \"aps\": { \"alert\": { \"title\": \"%s\", \"body\": \"%s\" }, \"sound\": \"default\" }, \"id\": \"%s\",  \"type\": \"%s\", \"serializer\": \"%s\" }" % (key, title, text, id, notification_type, json.dumps(data).replace("'", "").replace('"', "'"))}
         response = self.connection.publish(
             TargetArn=arn,
             Message=json.dumps(message),
