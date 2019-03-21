@@ -122,7 +122,7 @@ class Client(object):
         :param id: notification ID
         :return: response from SNS
         """
-        key = "APNS_SANDBOX" if getattr(settings, 'IOS_PLATFORM_APPLICATION') else "APNS"
+        key = getattr(settings, 'IOS_PLATFORM_APPLICATION') if getattr(settings, 'IOS_PLATFORM_APPLICATION') else "APNS"
         message = {"APNS": "{ \"aps\": { \"alert\": { \"title\": \"%s\", \"body\": \"%s\" }, \"sound\": \"default\" }, \"id\": \"%s\",  \"type\": \"%s\", \"serializer\": \"%s\" }" % (title, text, id, notification_type, json.dumps(data).replace("'", "").replace('"', "'"))}
         response = self.connection.publish(
             TargetArn=arn,
